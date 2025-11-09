@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.Timeline;
-public class Player 
+public class Player : MonoBehaviour
 {
     public int lives;
     private float speed;
@@ -21,55 +21,62 @@ public class Player
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         lives = 3;
         speed = 5.0f;
-       // gameManager.ChangeLivesText(lives);
+        // gameManager.ChangeLivesText(lives);
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        Movement();
-        Shooting();
-    }
-
+    
     public void LoseALife()
     {
         lives = lives - 1;
         lives -= 1;
         lives--;
-       gameManager.ChangeLivesText(lives);
+        gameManager.ChangeLivesText(lives);
         if (lives == 0)
         {
-            Object.Instantiate(explosionPrefab, Transform.position, Quaternion.identity);
-           // Object.Destroy(this.GameObject);
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            //Object.Destroy(this.GameObject);
+
+        }
+
+        void Shooting()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+            }
+        }
+
+        void Movement()
+        {
+            horizontalInput = Input.GetAxis("Horizontal");
+            verticalInput = Input.GetAxis("Vertical");
+
+            transform.Translate(new Vector3(horizontalInput, verticalInput, 0) * Time.deltaTime * speed, Space.World);
+
+
+            float horizontalScreenSize = gameManager.horizontalScreenSize;
+            float verticalScreenSize = gameManager.verticalScreenSize;
+
+
+            Vector3 pos = transform.position;
+
+            if (pos.x <= -horizontalScreenSize || pos.x > horizontalScreenSize)
+            {
+                pos.x = -pos.x;
+            }
+
+            if (pos.y <= -verticalScreenSize || pos.y > verticalScreenSize)
+            {
+                pos.y = -pos.y;
+            }
+
+            transform.position = pos;
         }
     }
-
-    void Shooting()
+    void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Object.Instantiate(bulletPrefab, Transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
-        }
-    }
-
-    void Movement()
-    {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-        Transform.Translate(new Vector3(horizontalInput, verticalInput, 0) * Time.deltaTime * speed);
-
-        float horizontalScreenSize = gameManager.horizontalScreenSize;
-        float verticalScreenSize = gameManager.verticalScreenSize;
-
-        if (Transform.position.x <= -horizontalScreenSize || Transform.position.x > horizontalScreenSize)
-        {
-            Transform.position = new Vector3(Transform.position.x * -1, Transform.position.y, 0);
-        }
-
-        if (Transform.position.y <= -verticalScreenSize || Transform.position.y > verticalScreenSize)
-        {
-            Transform.position = new Vector3(Transform.position.x, Transform.position.y * -1, 0);
-        }
-
+        
     }
 }
+
