@@ -7,8 +7,9 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
 
-    public GameObject playerPrefab;
+    
     public GameObject enemyOnePrefab;
+    public GameObject enemyTwoPrefab;
     public GameObject cloudPrefab;
 
     public TextMeshProUGUI livesText;
@@ -24,9 +25,11 @@ public class GameManager : MonoBehaviour
         horizontalScreenSize = 10f;
         verticalScreenSize = 6.5f;
         score = 0;
-        Instantiate(playerPrefab, transform.position, Quaternion.identity);
+        
         CreateSky();
-        InvokeRepeating("CreateEnemy", 1, 3);
+        InvokeRepeating("CreateEnemy", 1f, 3f);
+       
+        InvokeRepeating("CreateEnemyTwo", 15f, 3f);
     }
 
     // Update is called once per frame
@@ -37,7 +40,12 @@ public class GameManager : MonoBehaviour
 
     void CreateEnemy()
     {
-        Instantiate(enemyOnePrefab, new Vector3(Random.Range(-horizontalScreenSize, horizontalScreenSize) * 0.9f, verticalScreenSize, 0), Quaternion.Euler(180, 0, 0));
+        Instantiate(enemyOnePrefab, new Vector3(Random.Range(-horizontalScreenSize, horizontalScreenSize), verticalScreenSize, 0), Quaternion.Euler(180, 0, 0));
+    }
+
+    void CreateEnemyTwo()
+    {
+        Instantiate(enemyTwoPrefab, new Vector3(Random.Range(-horizontalScreenSize, horizontalScreenSize) , verticalScreenSize, 0), Quaternion.Euler(180, 0, 0));
     }
 
     void CreateSky()

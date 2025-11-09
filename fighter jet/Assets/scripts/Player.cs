@@ -14,18 +14,24 @@ public class Player : MonoBehaviour
 
     public GameObject bulletPrefab;
     public GameObject explosionPrefab;
+    
 
     // Start is called before the first frame update
     void Start()
     {
+        gameObject.tag= "Player";
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         lives = 3;
         speed = 5.0f;
         // gameManager.ChangeLivesText(lives);
     }
-
+    void Update()
+    {
+        Shooting();
+        Movement();
+    }
     // Update is called once per frame
-    
+
     public void LoseALife()
     {
         lives = lives - 1;
@@ -37,17 +43,18 @@ public class Player : MonoBehaviour
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             //Object.Destroy(this.GameObject);
 
-        }
+        } }
 
-        void Shooting()
+      public void Shooting()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
-            }
+            gameObject.tag = "Bullet";
+        }
         }
 
-        void Movement()
+      public  void Movement()
         {
             horizontalInput = Input.GetAxis("Horizontal");
             verticalInput = Input.GetAxis("Vertical");
@@ -74,9 +81,6 @@ public class Player : MonoBehaviour
             transform.position = pos;
         }
     }
-    void Update()
-    {
-        
-    }
-}
+    
+
 
