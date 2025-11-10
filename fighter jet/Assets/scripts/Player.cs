@@ -14,12 +14,11 @@ public class Player : MonoBehaviour
 
     public GameObject bulletPrefab;
     public GameObject explosionPrefab;
-    
+
 
     // Start is called before the first frame update
     void Start()
     {
-        gameObject.tag= "Player";
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         lives = 3;
         speed = 5.0f;
@@ -34,53 +33,44 @@ public class Player : MonoBehaviour
 
     public void LoseALife()
     {
-        lives = lives - 1;
-        lives -= 1;
-        lives--;
+        lives = lives--;
         gameManager.ChangeLivesText(lives);
         if (lives == 0)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             //Object.Destroy(this.GameObject);
 
-        } }
-
-      public void Shooting()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
-            gameObject.tag = "Bullet";
-        }
-        }
-
-      public  void Movement()
-        {
-            horizontalInput = Input.GetAxis("Horizontal");
-            verticalInput = Input.GetAxis("Vertical");
-
-            transform.Translate(new Vector3(horizontalInput, verticalInput, 0) * Time.deltaTime * speed, Space.World);
-
-
-            float horizontalScreenSize = gameManager.horizontalScreenSize;
-            float verticalScreenSize = gameManager.verticalScreenSize;
-
-
-            Vector3 pos = transform.position;
-
-            if (pos.x <= -horizontalScreenSize || pos.x > horizontalScreenSize)
-            {
-                pos.x = -pos.x;
-            }
-
-            if (pos.y <= -verticalScreenSize || pos.y > verticalScreenSize)
-            {
-                pos.y = -pos.y;
-            }
-
-            transform.position = pos;
         }
     }
-    
+
+    public void Shooting()
+    {
+        //if the player presses the SPACE key, create a projectile
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Instantiate(bulletPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+        }
+    }
+
+    public void Movement()
+    {
+        horizontalInput = Input.GetAxis("Horizontal");
+
+        transform.Translate(new Vector3(horizontalInput, 0, 0) * Time.deltaTime * speed, Space.World);
+
+        float horizontalScreenSize = gameManager.horizontalScreenSize;
+        float verticalScreenSize = gameManager.verticalScreenSize;
+
+        Vector3 pos = transform.position;
+
+        if (pos.x <= -horizontalScreenSize || pos.x > horizontalScreenSize)
+        {
+            pos.x = -pos.x;
+        }
+
+        transform.position = pos;
+    }
+}
+
 
 

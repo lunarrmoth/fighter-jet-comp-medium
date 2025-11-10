@@ -32,10 +32,6 @@ public class Enemy2 : MonoBehaviour
         corners[1] = startPosition + new Vector3(-half, half, 0f); // top-left
         corners[2] = startPosition + new Vector3(half, half, 0f); // top-right
         corners[3] = startPosition + new Vector3(half, -half, 0f); // bottom-right
-
-
-
-
     }
 
     // Update is called once per frame
@@ -50,29 +46,28 @@ public class Enemy2 : MonoBehaviour
         Vector3 target = corners[currentCorner];
         transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
 
+
         if (Vector3.Distance(transform.position, target) < 0.01f)
         {
             currentCorner = (currentCorner + 1) % corners.Length;
             waitTimer = waitAtCorner;
         }
-    }
-    public void LoseALife()
-    {
-    }
-    private void OnTriggerEnter2D(Collider2D whatDidIHit)
-    {
-        if (whatDidIHit.tag == "Player")
+        transform.Translate(new Vector3(0, 1, 0) * Time.deltaTime * 3f);
+        if (transform.position.y < -6.5f)
         {
-            whatDidIHit.GetComponent<Player>().LoseALife();
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
-        else if (whatDidIHit.tag == "Bullet")
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Enemy hit by: " + other.gameObject.name);
+
+        // Check if it was hit by a bullet
+        if (other.gameObject.tag == "Bullet")
         {
-            Destroy(whatDidIHit.gameObject);
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            gameManager.AddScore(5);
-            Destroy(this.gameObject);
+            Destroy(other.gameObject);  // Destroy the bullet
+            Destroy(this.gameObject);   // Destroy the enemy
         }
     }
 }

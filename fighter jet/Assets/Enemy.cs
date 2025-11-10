@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
         startPosition = transform.position;
 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-       
+
     }
 
     // Update is called once per frame
@@ -29,24 +29,22 @@ public class Enemy : MonoBehaviour
     {
         float offset = Mathf.PingPong(Time.time * speed, moveRange * 2f) - moveRange;
         transform.position = new Vector3(startPosition.x + offset, transform.position.y, transform.position.z);
-    }
-    public void LoseALife()
-    {
-    }
-    private void OnTriggerEnter2D(Collider2D whatDidIHit)
-    {
-        if (whatDidIHit.tag == "Player")
+        transform.Translate(new Vector3(0, 1, 0) * Time.deltaTime * 3f);
+        if (transform.position.y < -6.5f)
         {
-            whatDidIHit.GetComponent<Player>().LoseALife();
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
         }
-        else if (whatDidIHit.tag == "Bullet")
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Enemy hit by: " + other.gameObject.name);
+
+        // Check if it was hit by a bullet
+        if (other.gameObject.tag == "Bullet")
         {
-            Destroy(whatDidIHit.gameObject);
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            gameManager.AddScore(5);
-            Destroy(this.gameObject);
+            Destroy(other.gameObject);  // Destroy the bullet
+            Destroy(this.gameObject);   // Destroy the enemy
         }
     }
 }
