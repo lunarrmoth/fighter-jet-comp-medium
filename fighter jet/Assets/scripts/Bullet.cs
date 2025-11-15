@@ -32,7 +32,6 @@ public class Bullet : MonoBehaviour
             {
                 Instantiate(explosionPrefab, other.transform.position, Quaternion.identity);
             }
-
             // Destroy enemy and bullet
             Destroy(other.gameObject);  // Destroy the enemy
             Destroy(gameObject);  // Destroy the bullet
