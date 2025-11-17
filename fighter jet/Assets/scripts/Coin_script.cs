@@ -6,14 +6,21 @@ public class Coin_script : MonoBehaviour
     [SerializeField] private float lifetimeSeconds = 5f;
 
     private GameManager gameManager;
+    private ScoreManager scoreManager;
     public GameObject coinPrefab;
+
     void Start()
     {
         var gmObj = GameObject.Find("GameManager");
         if (gmObj != null)
             gameManager = gmObj.GetComponent<GameManager>();
         else
-            Debug.LogWarning("GameManager not found in scene � using fallback spawn ranges.");
+            Debug.LogWarning("GameManager not found in scene – using fallback spawn ranges.");
+
+        // Find the ScoreManager component in the scene
+        scoreManager = FindFirstObjectByType<ScoreManager>();
+        if (scoreManager == null)
+            Debug.LogWarning("ScoreManager component not found in scene!");
 
         // Determine sprite/collider extents so the coin does not spawn partially off-screen
         Vector2 halfSize = Vector2.zero;
@@ -39,31 +46,37 @@ public class Coin_script : MonoBehaviour
 
             float x = Random.Range(-maxX, maxX);
             float y = Random.Range(-maxY, maxY);
-            spawn = new Vector3(x, y, transform.position.z);
+            spawn = new Vector3(x, 0, 0);
         }
         else
         {
             // Fallback ranges (account for half-size)
             float maxX = Mathf.Max(0.5f, 5f - halfSize.x);
             float maxY = Mathf.Max(0.5f, 3f - halfSize.y);
-            spawn = new Vector3(Random.Range(-maxX, maxX), Random.Range(-maxY, maxY), transform.position.z);
+            spawn = new Vector3(Random.Range(-maxX, maxX), 0, 0);
         }
 
         transform.position = spawn;
 
-        StartCoroutine(selfDestruct(lifetimeSeconds));
+        StartCoroutine(SelfDestruct(lifetimeSeconds));
     }
 
-    private IEnumerator selfDestruct(float seconds)
+    private IEnumerator SelfDestruct(float seconds)
     {
         yield return new WaitForSeconds(seconds);
         Destroy(gameObject);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if (collision.CompareTag("Player"))
         {
+            // Add score when player collects coin
+            if (scoreManager != null)
+            {
+                scoreManager.AddScore(1);
+            }
+
             Destroy(gameObject);
         }
     }
