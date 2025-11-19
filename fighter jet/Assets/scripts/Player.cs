@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor.Timeline;
+
 public class Player : MonoBehaviour
 {
     public int lives;
-    private float speed;
+    private float playerSpeed;
 
     private GameManager gameManager;
 
@@ -15,60 +15,82 @@ public class Player : MonoBehaviour
     public GameObject bulletPrefab;
     public GameObject explosionPrefab;
 
-
-    // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        GameObject gmObj = GameObject.Find("GameManager");
+        if (gmObj != null)
+        {
+            gameManager = gmObj.GetComponent<GameManager>();
+        }
+        else
+        {
+            Debug.LogError("GameManager not found in scene!");
+        }
+
         lives = 3;
-        speed = 5.0f;
-        // gameManager.ChangeLivesText(lives);
+        playerSpeed = 5.0f;
     }
+
     void Update()
     {
         Shooting();
         Movement();
     }
-    // Update is called once per frame
 
-    public void LoseALife()
+    void Shooting()
     {
-        lives = lives--;
-        gameManager.ChangeLivesText(lives);
-        if (lives == 0)
-        {
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            //Object.Destroy(this.GameObject);
-
-        }
-    }
-
-    public void Shooting()
-    {
-        //if the player presses the SPACE key, create a projectile
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Instantiate(bulletPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+            Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
         }
     }
 
-    public void Movement()
+    void Movement()
     {
         horizontalInput = Input.GetAxis("Horizontal");
 
-        transform.Translate(new Vector3(horizontalInput, 0, 0) * Time.deltaTime * speed, Space.World);
+        transform.Translate(new Vector3(horizontalInput, 0, 0) * Time.deltaTime * playerSpeed, Space.World);
 
-        float horizontalScreenSize = gameManager.horizontalScreenSize;
-        float verticalScreenSize = gameManager.verticalScreenSize;
-
-        Vector3 pos = transform.position;
-
-        if (pos.x <= -horizontalScreenSize || pos.x > horizontalScreenSize)
+        // Only use gameManager if it exists
+        if (gameManager != null)
         {
-            pos.x = -pos.x;
-        }
+            float horizontalScreenSize = gameManager.horizontalScreenSize;
+            float verticalScreenSize = gameManager.verticalScreenSize;
 
-        transform.position = pos;
+            Vector3 pos = transform.position;
+
+            if (pos.x <= -horizontalScreenSize || pos.x > horizontalScreenSize)
+            {
+                pos.x = -pos.x;
+            }
+
+            if (transform.position.y <= -verticalScreenSize || transform.position.y > verticalScreenSize)
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y * -1, 0);
+            }
+
+            transform.position = pos;
+        }
+        else
+        {
+            // Fallback values if GameManager not found
+            float horizontalScreenSize = 10f;
+            float verticalScreenSize = 6.5f;
+
+            Vector3 pos = transform.position;
+
+            if (pos.x <= -horizontalScreenSize || pos.x > horizontalScreenSize)
+            {
+                pos.x = -pos.x;
+            }
+
+            if (transform.position.y <= -verticalScreenSize || transform.position.y > verticalScreenSize)
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y * -1, 0);
+            }
+
+            transform.position = pos;
+        }
     }
 }
 
